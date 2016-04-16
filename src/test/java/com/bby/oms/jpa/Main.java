@@ -1,6 +1,7 @@
 package com.bby.oms.jpa;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 import com.bby.oms.jpa.domain.Geek;
 import com.bby.oms.jpa.domain.Person;
@@ -89,12 +91,31 @@ public class Main {
 			geek.setLastName("Cup");
 			geek.setFavouriteProgrammingLanguage("Java");
 			entityManager.persist(geek);
-			
 			transaction.commit();
+
+			listPeople(entityManager);
+
 		}catch (Exception e) {
 			if (transaction.isActive()) {
 				transaction.rollback();
 			}
+		}
+		
+	}
+	
+	private void listPeople(EntityManager entityManager) {
+		TypedQuery<Person> query = entityManager.createQuery("from Person", Person.class);
+		
+		List<Person> resultList = query.getResultList();
+		System.out.println("List of People:");
+		for(Person person : resultList) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(person.getFirstName()).append(" ").append(person.getLastName());
+			if (person instanceof Geek) {
+				Geek geek = (Geek)person;
+				sb.append(" ").append(geek.getFavouriteProgrammingLanguage());
+			}
+			System.out.println(sb.toString());
 		}
 	}
 }
