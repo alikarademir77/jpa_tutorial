@@ -1,6 +1,8 @@
 package com.bby.oms.jpa.domain;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -21,6 +24,8 @@ public class Person {
 	private String firstName;
 	private String lastName;
 	private BigDecimal salary;
+	private List<Phone> phones = new ArrayList();
+
 	
 	private IdCard idCard;
 
@@ -71,5 +76,13 @@ public class Person {
 		this.salary = salary;
 	}
 	
-	
+	@OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+	public List<Phone> getPhones() {
+		return phones;
+	}
+
+	public  void setPhones(List<Phone> phones) {
+		this.phones = phones;
+	}
+
 }

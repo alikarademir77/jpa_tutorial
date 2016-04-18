@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 
 import com.bby.oms.jpa.domain.Geek;
 import com.bby.oms.jpa.domain.Person;
+import com.bby.oms.jpa.domain.Phone;
 
 public class Main {
 	
@@ -53,14 +54,23 @@ public class Main {
 			person.setFirstName("Homer");
 			person.setLastName("Simpson");
 			person.setSalary(new BigDecimal(200000));
+			
 			entityManager.persist(person);
 
 			person = new Person();
 			person.setFirstName("Ali");
 			person.setLastName("Karademir");
 			person.setSalary(new BigDecimal(300000));
+			
 			entityManager.persist(person);
 			
+			Phone phone = new Phone();
+			phone.setNumber("604-328-7918");
+			phone.setPerson(person);
+
+			entityManager.persist(person);
+			entityManager.persist(phone);
+
 			transaction.commit();
 		} catch (Exception e) {
 			if (transaction.isActive()) {
@@ -104,7 +114,7 @@ public class Main {
 	}
 	
 	private void listPeople(EntityManager entityManager) {
-		TypedQuery<Person> query = entityManager.createQuery("from Person", Person.class);
+		TypedQuery<Person> query = entityManager.createQuery("from Person p left join fetch p.phones", Person.class);
 		
 		List<Person> resultList = query.getResultList();
 		System.out.println("List of People:");
