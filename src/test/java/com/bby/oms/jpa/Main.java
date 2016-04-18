@@ -14,6 +14,7 @@ import javax.persistence.TypedQuery;
 import com.bby.oms.jpa.domain.Geek;
 import com.bby.oms.jpa.domain.Person;
 import com.bby.oms.jpa.domain.Phone;
+import com.bby.oms.jpa.domain.Project;
 
 public class Main {
 	
@@ -33,6 +34,7 @@ public class Main {
 			entityManager = factory.createEntityManager();
 			persistPerson(entityManager);
 			persistGeek(entityManager);
+			persistGeekProjects(entityManager);
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			e.printStackTrace();
@@ -128,4 +130,26 @@ public class Main {
 			System.out.println(sb.toString());
 		}
 	}
+	
+	private void persistGeekProjects(EntityManager entityManager) {
+		EntityTransaction transaction = entityManager.getTransaction();
+		try{
+			List<Geek> resultList = entityManager.createQuery("from Geek g where g.favouriteProgrammingLanguage = :fpl", Geek.class).setParameter("fpl", "Java").getResultList();
+			transaction = entityManager.getTransaction();
+			transaction.begin();
+			Project project = new Project();
+			project.setTitle("Java Project");
+			for (Geek geek : resultList) {
+				project.getGeeks().add(geek);
+				geek.getProjects().add(project);
+			}
+			entityManager.persist(project);
+			transaction.commit();
+		}catch (Exception e) {
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+		}
+	}
+	
 }
